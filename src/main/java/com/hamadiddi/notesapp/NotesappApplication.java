@@ -8,6 +8,7 @@ public class NotesappApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(NotesappApplication.class, args);
+		System.out.println("NOTEAPP HAS STARTED...");
 	}
 
 }
