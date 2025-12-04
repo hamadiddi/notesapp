@@ -11,6 +11,8 @@ import com.hamadiddi.notesapp.model.Users;
 public interface UserRepository extends JpaRepository<Users, Long>{
 
    Optional<Users> findByUsername(String username);
+   // Users findByUsername(String username);
+  
 
    Optional<Users> findByUsernameIgnoreCase(String username);
 
