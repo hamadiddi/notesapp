@@ -1,6 +1,9 @@
 package com.hamadiddi.notesapp.controller.web;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +26,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "User Management", description = "Endpoints for user management")
 public class UserController implements UserApi{
 
+    Response<Users> response;
+
     @Autowired
     AuthenticationManager authenticationManager;
 
@@ -36,7 +41,7 @@ public class UserController implements UserApi{
 @Override
 public ResponseEntity<?> register(UsersReqDto user) {
 
-    Response<Users> response;
+    
 
     // Validate null/empty
     if (user == null ||
@@ -103,12 +108,15 @@ public ResponseEntity<?> register(UsersReqDto user) {
 }
 
 
-public String login(UserLoginDto user) {
+public ResponseEntity<?> login(UserLoginDto user) {
+    Map<String, Object> resp = new HashMap<>();
+    
     Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
     if (authentication.isAuthenticated()) {
-        return jwtService.generateToken(user.getUsername());
+        resp.put("token", jwtService.generateToken(user.getUsername()));
+        return ResponseEntity.ok(resp);
     }
-    return "fail"; 
+    return ResponseEntity.ok("fail"); 
 }
     
 

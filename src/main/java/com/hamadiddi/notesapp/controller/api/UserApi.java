@@ -16,7 +16,7 @@ public interface UserApi {
     public ResponseEntity<?> register(@RequestBody UsersReqDto user);
 
     @PostMapping("/login")
-    public String login(@RequestBody UserLoginDto user);
+    public ResponseEntity<?> login(@RequestBody UserLoginDto user);
 
 
 }
