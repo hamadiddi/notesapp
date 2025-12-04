@@ -1,15 +1,13 @@
 package com.hamadiddi.notesapp.controller.web;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hamadiddi.notesapp.controller.api.UserApi;
+import com.hamadiddi.notesapp.dto.UsersReqDto;
 import com.hamadiddi.notesapp.model.Users;
 import com.hamadiddi.notesapp.repository.UserRepository;
 import com.hamadiddi.notesapp.utils.Response;
@@ -25,17 +23,18 @@ public class UserController implements UserApi{
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
 @Override
-public ResponseEntity<?> register(Users user) {
+public ResponseEntity<?> register(UsersReqDto user) {
 
     Response<Users> response;
 
     // Validate null/empty
     if (user == null ||
         user.getUsername() == null || user.getUsername().isEmpty() ||
-        user.getPassword() == null || user.getPassword().isEmpty()) {
+        user.getPassword() == null || user.getPassword().isEmpty() ||
+        user.getEmail() == null || user.getEmail().isEmpty()) {
 
         response = new Response<>(
-                "Username or password cannot be null or empty",
+                "Username or password or email cannot be null or empty",
                 "fail",
                 null,
                 400
@@ -57,11 +56,30 @@ public ResponseEntity<?> register(Users user) {
         return ResponseEntity.status(409).body(response);
     }
 
+    // Check for existing username
+    if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+
+        response = new Response<>(
+                "Email already exists",
+                "fail",
+                null,
+                409
+        );
+
+        return ResponseEntity.status(409).body(response);
+    }
+
     // Encode password
     user.setPassword(encoder.encode(user.getPassword()));
 
+    // Convert DTO to entity
+    Users entity = new Users();
+    entity.setUsername(user.getUsername());
+    entity.setPassword(user.getPassword());
+    entity.setEmail(user.getEmail());
+
     // Save user
-    Users saved = userRepository.save(user);
+    Users saved = userRepository.save(entity);
 
     response = new Response<>(
             "Registration successful",
@@ -72,9 +90,6 @@ public ResponseEntity<?> register(Users user) {
 
     return ResponseEntity.ok(response);
 }
-
-
-
     
 
 }
