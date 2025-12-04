@@ -3,13 +3,18 @@ package com.hamadiddi.notesapp.controller.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hamadiddi.notesapp.controller.api.UserApi;
+import com.hamadiddi.notesapp.dto.UserLoginDto;
 import com.hamadiddi.notesapp.dto.UsersReqDto;
 import com.hamadiddi.notesapp.model.Users;
 import com.hamadiddi.notesapp.repository.UserRepository;
+import com.hamadiddi.notesapp.service.JWTService;
 import com.hamadiddi.notesapp.utils.Response;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,6 +22,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @Tag(name = "User Management", description = "Endpoints for user management")
 public class UserController implements UserApi{
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JWTService jwtService;
 
     @Autowired
     private UserRepository userRepository;
@@ -89,6 +100,15 @@ public ResponseEntity<?> register(UsersReqDto user) {
     );
 
     return ResponseEntity.ok(response);
+}
+
+
+public String login(UserLoginDto user) {
+    Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+    if (authentication.isAuthenticated()) {
+        return jwtService.generateToken(user.getUsername());
+    }
+    return "fail"; 
 }
     
 
