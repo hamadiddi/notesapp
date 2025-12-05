@@ -18,15 +18,15 @@ import com.hamadiddi.notesapp.dto.UsersReqDto;
 import com.hamadiddi.notesapp.model.Users;
 import com.hamadiddi.notesapp.repository.UserRepository;
 import com.hamadiddi.notesapp.service.JWTService;
+import com.hamadiddi.notesapp.utils.ErrorResponse;
 import com.hamadiddi.notesapp.utils.Response;
+import com.hamadiddi.notesapp.utils.SuccessResponse;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Tag(name = "User Management", description = "Endpoints for user management")
 public class UserController implements UserApi{
-
-    Response<Users> response;
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -49,11 +49,9 @@ public ResponseEntity<?> register(UsersReqDto user) {
         user.getPassword() == null || user.getPassword().isEmpty() ||
         user.getEmail() == null || user.getEmail().isEmpty()) {
 
-        response = new Response<>(
-                "Username or password or email cannot be null or empty",
+        ErrorResponse response = new ErrorResponse(
                 "fail",
-                null,
-                400
+                "Username or password or email cannot be null or empty"
         );
 
         return ResponseEntity.status(400).body(response);
@@ -62,11 +60,10 @@ public ResponseEntity<?> register(UsersReqDto user) {
     // Check for existing username
     if (userRepository.findByUsername(user.getUsername()).isPresent()) {
 
-        response = new Response<>(
-                "Username already exists",
+        ErrorResponse response = new ErrorResponse(
                 "fail",
-                null,
-                409
+                "Username already exists"
+                
         );
 
         return ResponseEntity.status(409).body(response);
@@ -75,11 +72,11 @@ public ResponseEntity<?> register(UsersReqDto user) {
     // Check for existing username
     if (userRepository.findByEmail(user.getEmail()).isPresent()) {
 
-        response = new Response<>(
-                "Email already exists",
+        ErrorResponse response = new ErrorResponse(
                 "fail",
-                null,
-                409
+                "Email already exists"
+                
+                
         );
 
         return ResponseEntity.status(409).body(response);
@@ -97,11 +94,10 @@ public ResponseEntity<?> register(UsersReqDto user) {
     // Save user
     Users saved = userRepository.save(entity);
 
-    response = new Response<>(
-            "Registration successful",
+    SuccessResponse<Users> response = new SuccessResponse<>(
             "success",
-            saved,
-            200
+            "Registration successful",            
+            saved
     );
 
     return ResponseEntity.ok(response);
