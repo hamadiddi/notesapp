@@ -115,5 +115,18 @@ public class NoteController implements NoteApi {
 
     }
 
+    @Override
+    public ResponseEntity<?> getNote(Long id) {
+        Optional<Note> note = noteRepository.findById(id);
+        if (note.isEmpty()) {
+            ErrorResponse response = new ErrorResponse("fail", "Note with id " + id + " doesn't exist");
+            return ResponseEntity.status(400).body(response);
+        }
+        return ResponseEntity.status(200).body(noteRepository.findById(id));
+    }
+
+
+    
+
 
 }

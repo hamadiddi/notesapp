@@ -2,6 +2,7 @@ package com.hamadiddi.notesapp.controller.api;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,5 +24,8 @@ public interface NoteApi {
                                          @RequestParam(defaultValue = "10") int size,
                                          @RequestParam(defaultValue = "id") String sortBy
     );
+
+    @GetMapping("/notes/{id}")
+    public ResponseEntity<?> getNote(@PathVariable Long id);
 
 }
