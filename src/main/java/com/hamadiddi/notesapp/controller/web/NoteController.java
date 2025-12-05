@@ -1,8 +1,15 @@
 package com.hamadiddi.notesapp.controller.web;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -69,8 +76,43 @@ public class NoteController implements NoteApi {
 }
 
     @Override
-    public ResponseEntity<?> getAllNotes() {
-        return ResponseEntity.status(200).body(noteRepository.findAll()); 
+    public ResponseEntity<?> getAllNotes(String search, int page, int size, String sortBy) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(()->new RuntimeException("User not found"));
+
+        if (page < 0) page = 0;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+
+        Page<Note> notePage;
+
+        // Handle search safely
+        if (search == null || search.trim().isEmpty() || search.equals("0")) {
+            notePage = noteRepository.findAllNotesByUserId(user.getId(), pageable);
+        } else {
+            notePage = noteRepository.searchNotesByUserId(user.getId(), pageable, search.toUpperCase());
+        }
+
+       // If user requests a page number greater than total pages, reset to last available page
+        if (page > notePage.getTotalPages() - 1 && notePage.getTotalPages() > 0) {
+            pageable = PageRequest.of(notePage.getTotalPages() - 1, size, Sort.by(sortBy).descending());
+        
+            if (search == null || search.trim().isEmpty() || search.equals("0")) {
+                notePage = noteRepository.findAllNotesByUserId(user.getId(), pageable);
+            } else {
+                notePage = noteRepository.searchNotesByUserId(user.getId(), pageable, search.toUpperCase());
+            }
+        }
+        return ResponseEntity.ok(Map.of(
+            "notes", notePage.getContent(),
+            "currentPage", notePage.getNumber(),
+            "totalItems", notePage.getTotalElements(),
+            "totalPages", notePage.getTotalPages()
+        ));
+
     }
 
 
