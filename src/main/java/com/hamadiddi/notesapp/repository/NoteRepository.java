@@ -14,10 +14,10 @@ public interface NoteRepository extends JpaRepository<Note, Long>{
 
     Optional<Note> findByTitle(String title);
 
-    // @Query("select n from Note n")
     Page<Note> findAllNotesByUserId(Long userId, Pageable pageable);
 
-    // @Query("select n from Note n wheree n.title like %:search%")
     Page<Note> searchNotesByUserId(Long userId, Pageable pageable, String search);
+
+    Optional<Note> findByIdAndUserId(Long id, Long userId);
 
 }

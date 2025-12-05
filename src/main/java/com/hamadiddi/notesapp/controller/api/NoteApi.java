@@ -1,6 +1,7 @@
 package com.hamadiddi.notesapp.controller.api;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,5 +28,8 @@ public interface NoteApi {
 
     @GetMapping("/notes/{id}")
     public ResponseEntity<?> getNote(@PathVariable Long id);
+
+    @DeleteMapping("/notes/{id}")
+    public ResponseEntity<?> deleteNote(@PathVariable Long id);
 
 }

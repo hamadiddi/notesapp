@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hamadiddi.notesapp.controller.api.NoteApi;
@@ -124,6 +125,29 @@ public class NoteController implements NoteApi {
         }
         return ResponseEntity.status(200).body(noteRepository.findById(id));
     }
+
+    @Override
+    public ResponseEntity<?> deleteNote(Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(()->new RuntimeException("User not found"));
+
+        // Check if note exists and belongs to user
+        Note note = noteRepository.findByIdAndUserId(id, user.getId())
+                .orElseThrow(()->new RuntimeException("Note not found or you do not have permission"));
+        
+        noteRepository.delete(note);
+
+        SuccessResponse<String> success = new SuccessResponse<>(
+            "success",
+            "Note deleted successfully",
+            "deleted"
+        );
+        return ResponseEntity.status(200).body(success);
+    }
+
+    
 
 
     
