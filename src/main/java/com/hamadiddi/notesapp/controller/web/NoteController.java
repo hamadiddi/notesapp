@@ -68,5 +68,10 @@ public class NoteController implements NoteApi {
     
 }
 
+    @Override
+    public ResponseEntity<?> getAllNotes() {
+        return ResponseEntity.status(200).body(noteRepository.findAll()); 
+    }
+
 
 }
