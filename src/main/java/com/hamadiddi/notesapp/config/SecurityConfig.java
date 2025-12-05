@@ -36,7 +36,7 @@ public class SecurityConfig {
                             "/api/auth/**",
                             "/register",
                             "/login"
-                        )
+                                                )
                         .permitAll()   // allow register & login
                         .anyRequest().authenticated()                  // other endpoints need login
                 )
