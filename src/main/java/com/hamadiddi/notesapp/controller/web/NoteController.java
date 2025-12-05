@@ -18,7 +18,10 @@ import com.hamadiddi.notesapp.repository.UserRepository;
 import com.hamadiddi.notesapp.utils.ErrorResponse;
 import com.hamadiddi.notesapp.utils.SuccessResponse;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
+@Tag(name = "Note Management", description = "Endpoints for note management")
 public class NoteController implements NoteApi {
 
     @Autowired

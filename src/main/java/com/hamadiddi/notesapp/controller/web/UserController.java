@@ -19,7 +19,6 @@ import com.hamadiddi.notesapp.model.Users;
 import com.hamadiddi.notesapp.repository.UserRepository;
 import com.hamadiddi.notesapp.service.JWTService;
 import com.hamadiddi.notesapp.utils.ErrorResponse;
-import com.hamadiddi.notesapp.utils.Response;
 import com.hamadiddi.notesapp.utils.SuccessResponse;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
